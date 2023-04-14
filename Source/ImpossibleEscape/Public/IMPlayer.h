@@ -18,7 +18,7 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
-	AActor* GlobalCameraRef;
+	AActor* GlobalCameraRef;	// a global top-down camera to be used
 
 	UPROPERTY(EditAnywhere)
 	float MoveSpeed;
