@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "IMHealthComponent.h"
 #include "IMPlayer.generated.h"
 
+class UIMHealthComponent;
 UCLASS()
 class IMPOSSIBLEESCAPE_API AIMPlayer : public ACharacter
 {
@@ -24,15 +26,13 @@ protected:
 	float MoveSpeed;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Basis")
-	int LifeCount;	// how many lives left for this person
+	TObjectPtr<UIMHealthComponent> HealthComp;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
 
 	void MoveRight(float value);	// movement
 	void Shoot();	// player shoots
-	bool TakeDamage(); // return true if still alive after that, return false if dead
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

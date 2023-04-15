@@ -2,6 +2,7 @@
 
 
 #include "IMPlayer.h"
+#include "IMHealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 AIMPlayer::AIMPlayer()
@@ -10,6 +11,7 @@ AIMPlayer::AIMPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MoveSpeed = 100.f;
+	HealthComp = CreateDefaultSubobject<UIMHealthComponent>("HealthComp");
 }
 
 // Called when the game starts or when spawned
@@ -55,10 +57,4 @@ void AIMPlayer::Shoot()
 		SpawnParams.Instigator = this;
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 	}
-}
-
-bool AIMPlayer::TakeDamage()
-{
-	LifeCount--;
-	return (LifeCount > 0);
 }

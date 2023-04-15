@@ -21,6 +21,8 @@ AIMProjectile::AIMProjectile()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	MovementComp->ProjectileGravityScale = 0.f;
+
+	StaticMesh->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 // Called when the game starts or when spawned
