@@ -12,6 +12,7 @@ AIMProjectile::AIMProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetEnableGravity(false);
 	RootComponent = StaticMesh;
 
 	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
@@ -19,12 +20,15 @@ AIMProjectile::AIMProjectile()
 	MovementComp->MaxSpeed = 500.f;
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
+	MovementComp->ProjectileGravityScale = 0.f;
 }
 
 // Called when the game starts or when spawned
 void AIMProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StaticMesh->OnComponentHit.AddDynamic(this, &AIMProjectile::OnActorHit);
 }
 
 // Called every frame
@@ -34,3 +38,14 @@ void AIMProjectile::Tick(float DeltaTime)
 
 }
 
+void AIMProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	TryDestructWall(OtherActor, Hit);	// bp implemented
+
+
+	if (AIMProjectile* OtherProjectile = Cast<AIMProjectile>(OtherActor))
+	{
+		OtherProjectile->Destroy();
+	}
+	this->Destroy();
+}

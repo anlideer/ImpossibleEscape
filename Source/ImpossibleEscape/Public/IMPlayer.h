@@ -17,17 +17,21 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Basis")
 	AActor* GlobalCameraRef;	// a global top-down camera to be used
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Basis")
 	float MoveSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Basis")
+	int LifeCount;	// how many lives left for this person
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
 
 	void MoveRight(float value);	// movement
 	void Shoot();	// player shoots
+	bool TakeDamage(); // return true if still alive after that, return false if dead
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,7 +42,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-private:
-
 };

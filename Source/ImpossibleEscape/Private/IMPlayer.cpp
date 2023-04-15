@@ -45,11 +45,20 @@ void AIMPlayer::MoveRight(float value)
 
 void AIMPlayer::Shoot()
 {
-	FRotator SpawnRotator = FVector(1, 0, 0).Rotation();
-	FVector StartLocation = GetActorLocation();	// fake, should be shot from the hand
-	FTransform SpawnTransform = FTransform(SpawnRotator, StartLocation);
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+	if (ensure(ProjectileClass))
+	{
+		FRotator SpawnRotator = FVector(1, 0, 0).Rotation();
+		FVector StartLocation = GetActorLocation();	// fake, should be shot from the hand
+		FTransform SpawnTransform = FTransform(SpawnRotator, StartLocation);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+	}
+}
+
+bool AIMPlayer::TakeDamage()
+{
+	LifeCount--;
+	return (LifeCount > 0);
 }
