@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "IMHealthComponent.h"
+#include "IMEnemyLine.h"
+#include "IMBasePawn.h"
 #include "IMBaseEnemy.generated.h"
 
-class UIMHealthComponent;
 UCLASS()
-class IMPOSSIBLEESCAPE_API AIMBaseEnemy : public ACharacter
+class IMPOSSIBLEESCAPE_API AIMBaseEnemy : public AIMBasePawn
 {
 	GENERATED_BODY()
 	
@@ -19,26 +19,23 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "Basis")
-	float MoveSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Basis")
-	TObjectPtr<UIMHealthComponent> HealthComp;
-
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Score")
+	int EnemyPoints;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+
+	AIMEnemyLine* Manager;
+
+	void Die() override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
 	FTimerHandle TimerHandle;
 
-	void Shoot();
 	void ScheduleShoot();
 };

@@ -18,19 +18,53 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Generation")
-	int EnemyCount;
+	int EnemyPerLine;
+
+	UPROPERTY(EditAnywhere, Category = "Generation")
+	int EnemyLineCount;
 
 	UPROPERTY(EditAnywhere, Category = "Generation")
 	FVector IntervalVec;
 
-	UPROPERTY(EditAnywhere, Category = "Generation")
+	UPROPERTY(EditAnywhere, Category = "EnemyPreset")
 	TSubclassOf<AActor> EnemyClass;
+
+	UPROPERTY(EditAnywhere, Category = "EnemyPreset")
+	TSubclassOf<AActor> SecondEnemyClass;
+
+	UPROPERTY(EditAnywhere, Category = "EnemyPreset")
+	TSubclassOf<AActor> ThirdEnemyClass;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float MinY;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float MaxY;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float FinalX;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float InitialMoveSpeed;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+
+	void OnEnemyDied();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+
+	int CurrentEnemyCount;
+	float RealMinY;
+	float RealMaxY;	// considering enemy count per line
+	float RealMoveSpeed;	// dynamica based on enemy alive
+	float MoveDirection;
+	bool isMoving;
+
+	void DoMove();
 };

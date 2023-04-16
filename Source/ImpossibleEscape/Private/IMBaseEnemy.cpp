@@ -8,8 +8,6 @@ AIMBaseEnemy::AIMBaseEnemy()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	HealthComp = CreateDefaultSubobject<UIMHealthComponent>("HealthComp");
 }
 
 // Called when the game starts or when spawned
@@ -17,7 +15,7 @@ void AIMBaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AIMBaseEnemy::ScheduleShoot, FMath::RandRange(0.2f, 2.f), false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AIMBaseEnemy::ScheduleShoot, FMath::RandRange(0.2f, 5.f), false);
 }
 
 // Called every frame
@@ -28,22 +26,26 @@ void AIMBaseEnemy::Tick(float DeltaTime)
 
 void AIMBaseEnemy::ScheduleShoot()
 {
-	Shoot();
-	//TimerHandle.Invalidate();
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AIMBaseEnemy::ScheduleShoot, FMath::RandRange(1.f, 5.f), false);
+	// detect if there is an enemy in front of this
+	FHitResult Hit;
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+	FVector StartPoint = GetActorLocation() + FVector(-50, 0, 0);	// skip its own collision
+	FVector EndPoint = GetActorLocation() + FVector(-200, 0, 0);
+
+	GetWorld()->LineTraceSingleByObjectType(Hit, StartPoint, EndPoint, ObjectQueryParams);
+	//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Blue, false, 2.f, 0U, 1.f);
+	AActor* HitActor = Hit.GetActor();
+	if (HitActor == nullptr)
+	{
+		Shoot();
+	}
+
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AIMBaseEnemy::ScheduleShoot, FMath::RandRange(2.f, 5.f), false);
 }
 
-
-void AIMBaseEnemy::Shoot()
+void AIMBaseEnemy::Die()
 {
-	if (ensure(ProjectileClass))
-	{
-		FRotator SpawnRotator = FVector(-1, 0, 0).Rotation();
-		FVector StartLocation = GetActorLocation();	// fake, should be shot from the hand
-		FTransform SpawnTransform = FTransform(SpawnRotator, StartLocation);
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
-	}
+	Manager->OnEnemyDied();
+	this->Destroy();
 }

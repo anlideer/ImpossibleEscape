@@ -2,7 +2,6 @@
 
 
 #include "IMPlayer.h"
-#include "IMHealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 AIMPlayer::AIMPlayer()
@@ -11,7 +10,6 @@ AIMPlayer::AIMPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MoveSpeed = 100.f;
-	HealthComp = CreateDefaultSubobject<UIMHealthComponent>("HealthComp");
 }
 
 // Called when the game starts or when spawned
@@ -42,19 +40,6 @@ void AIMPlayer::MoveRight(float value)
 {
 	FVector pos = GetActorLocation();
 	pos.Y += value * MoveSpeed * UGameplayStatics::GetWorldDeltaSeconds(this);
-	SetActorLocation(pos);
-}
-
-void AIMPlayer::Shoot()
-{
-	if (ensure(ProjectileClass))
-	{
-		FRotator SpawnRotator = FVector(1, 0, 0).Rotation();
-		FVector StartLocation = GetActorLocation();	// fake, should be shot from the hand
-		FTransform SpawnTransform = FTransform(SpawnRotator, StartLocation);
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
-	}
+	if (pos.Y <= MaxY && pos.Y >= MinY)
+		SetActorLocation(pos);
 }

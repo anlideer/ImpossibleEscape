@@ -3,6 +3,7 @@
 
 #include "IMProjectile.h"
 #include "Components/StaticMeshComponent.h"
+#include "IMBasePawn.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
@@ -21,8 +22,6 @@ AIMProjectile::AIMProjectile()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	MovementComp->ProjectileGravityScale = 0.f;
-
-	StaticMesh->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 // Called when the game starts or when spawned
@@ -30,6 +29,7 @@ void AIMProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StaticMesh->IgnoreActorWhenMoving(GetInstigator(), true);
 	StaticMesh->OnComponentHit.AddDynamic(this, &AIMProjectile::OnActorHit);
 }
 
@@ -49,5 +49,11 @@ void AIMProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	{
 		OtherProjectile->Destroy();
 	}
+	else if (AIMBasePawn* OtherPawn = Cast<AIMBasePawn>(OtherActor))
+	{
+		OtherPawn->TakeDamage();
+	}
+
+
 	this->Destroy();
 }

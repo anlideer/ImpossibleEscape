@@ -3,13 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "IMHealthComponent.h"
+#include "IMBasePawn.h"
 #include "IMPlayer.generated.h"
 
-class UIMHealthComponent;
 UCLASS()
-class IMPOSSIBLEESCAPE_API AIMPlayer : public ACharacter
+class IMPOSSIBLEESCAPE_API AIMPlayer : public AIMBasePawn
 {
 	GENERATED_BODY()
 
@@ -22,17 +20,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Basis")
 	AActor* GlobalCameraRef;	// a global top-down camera to be used
 
-	UPROPERTY(EditAnywhere, Category="Basis")
+	UPROPERTY(EditAnywhere, Category="Movement")
 	float MoveSpeed;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Basis")
-	TObjectPtr<UIMHealthComponent> HealthComp;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float MinY;
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float MaxY;
 
 	void MoveRight(float value);	// movement
-	void Shoot();	// player shoots
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
