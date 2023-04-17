@@ -2,6 +2,8 @@
 
 
 #include "IMBaseEnemy.h"
+#include "Kismet/GameplayStatics.h"
+#include "IMScoreComponent.h"
 
 // Sets default values
 AIMBaseEnemy::AIMBaseEnemy()
@@ -46,6 +48,14 @@ void AIMBaseEnemy::ScheduleShoot()
 
 void AIMBaseEnemy::Die()
 {
-	Manager->OnEnemyDied();
+	Manager->OnEnemyDied(IndexX, IndexY);
+	
+	if (UIMScoreComponent* ScoreComp =
+		Cast<UIMScoreComponent>(
+			UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetComponentByClass(UIMScoreComponent::StaticClass())))
+	{
+		ScoreComp->AddScore(EnemyPoints);
+	}
+
 	this->Destroy();
 }

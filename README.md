@@ -6,7 +6,8 @@ The implementation of destructable walls is following a video tutorial https://w
 
 **Art assets from**:
 Kenny Assets https://kenney.nl/assets/space-kit (CC0 License) Type: Models  
-GOOD SKY by Uneasy Game Dev https://uneasy-game-dev.gitbook.io/docum/unreal-marketplace/good-sky Type: Skybox BP
+GOOD SKY by Uneasy Game Dev https://uneasy-game-dev.gitbook.io/docum/unreal-marketplace/good-sky Type: Skybox BP  
+https://uxwing.com/rocket-icon/ (icon)
 
 
 

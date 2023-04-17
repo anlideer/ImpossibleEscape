@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "IMBasePawn.h"
+#include "IMScoreComponent.h"
 #include "IMPlayer.generated.h"
+
+class UIMScoreComponent;
 
 UCLASS()
 class IMPOSSIBLEESCAPE_API AIMPlayer : public AIMBasePawn
@@ -29,11 +32,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float MaxY;
 
+	UPROPERTY(VisibleAnywhere, Category = "Basis")
+	UIMScoreComponent* ScoreComp;
+
 	void MoveRight(float value);	// movement
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+
+	void Die() override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

@@ -52,6 +52,7 @@ void AIMBasePawn::Shoot()
 void AIMBasePawn::TakeDamage()
 {
 	LifeCount--;
+	OnLifeChanged.Broadcast(LifeCount);
 	if (LifeCount <= 0)
 	{
 		Die();

@@ -20,10 +20,15 @@ void AIMEnemyLine::BeginPlay()
 
 	CurrentEnemyCount = EnemyLineCount * EnemyPerLine;
 	RealMinY = MinY;
-	RealMaxY = MaxY - EnemyPerLine * IntervalVec.Y;
+	RealMaxY = MaxY - (EnemyPerLine - 1) * IntervalVec.Y;
 	RealMoveSpeed = InitialMoveSpeed;
 	MoveDirection = 1.f;
 	isMoving = true;
+
+	// init enemy array
+	EnemyList.SetNum(EnemyLineCount);
+	for (int c = 0; c < EnemyLineCount; c++)
+		EnemyList[c].SetNum(EnemyPerLine);
 
 	// generate a line of the same type of enemies
 	if (ensure(EnemyClass) && ensure(SecondEnemyClass) && ensure(ThirdEnemyClass))
@@ -53,7 +58,10 @@ void AIMEnemyLine::BeginPlay()
 				if (AIMBaseEnemy* SpawnedEnemy = Cast<AIMBaseEnemy>(SpawnedActor))
 				{
 					SpawnedEnemy->Manager = this;
+					SpawnedEnemy->IndexX = i;
+					SpawnedEnemy->IndexY = j;
 				}
+				EnemyList[i][j] = SpawnedActor;
 			}
 		}
 	}
@@ -65,16 +73,24 @@ void AIMEnemyLine::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (isMoving)
+	{
 		DoMove();
+	}
 }
 
-void AIMEnemyLine::OnEnemyDied()
+void AIMEnemyLine::OnEnemyDied(int X, int Y)
 {
 	CurrentEnemyCount--;
+
+	// recalculate speed
 	float factor = (float)EnemyLineCount * (float)EnemyPerLine / (float)CurrentEnemyCount;
 	if (factor > 3) 
 		factor = 3;
 	RealMoveSpeed = InitialMoveSpeed * factor;
+
+	// recalculate miny maxy (moving area)
+	EnemyList[X][Y] = nullptr;
+	ReCalculateBorder();
 }
 
 void AIMEnemyLine::DoMove()
@@ -103,4 +119,50 @@ void AIMEnemyLine::DoMove()
 			MoveDirection = -MoveDirection;
 		}
 	}
+}
+
+void AIMEnemyLine::ReCalculateBorder()
+{
+	int StartY = 0;
+	int EndY = EnemyPerLine - 1;
+	for (int j = 0; j < EnemyPerLine; j++)
+	{
+		bool isEmpty = true;
+		for (int i = 0; i < EnemyLineCount; i++)
+		{
+			if (EnemyList[i][j] != nullptr)
+			{
+				isEmpty = false;
+				break;
+			}
+		}
+		if (isEmpty)
+			StartY++;
+		else
+			break;
+	}
+	for (int j = EnemyPerLine - 1; j >= 0; j--)
+	{
+		bool isEmpty = true;
+		for (int i = EnemyLineCount - 1; i >= 0; i--)
+		{
+			if (EnemyList[i][j] != nullptr)
+			{
+				isEmpty = false;
+				break;
+			}
+		}
+		if (isEmpty)
+			EndY--;
+		else
+			break;
+	}
+	
+	// update border
+	int length = EndY - StartY + 1;
+	if (length < 0)
+		length = 0;
+
+	RealMinY = MinY - StartY * IntervalVec.Y;
+	RealMaxY = MaxY - length * IntervalVec.Y;
 }

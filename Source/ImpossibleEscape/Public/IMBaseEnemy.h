@@ -28,6 +28,8 @@ protected:
 public:	
 
 	AIMEnemyLine* Manager;
+	int IndexX;
+	int IndexY;
 
 	void Die() override;
 

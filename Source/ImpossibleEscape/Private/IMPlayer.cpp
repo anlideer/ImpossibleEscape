@@ -10,6 +10,7 @@ AIMPlayer::AIMPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MoveSpeed = 100.f;
+	ScoreComp = CreateDefaultSubobject<UIMScoreComponent>("ScoreComp");
 }
 
 // Called when the game starts or when spawned
@@ -42,4 +43,9 @@ void AIMPlayer::MoveRight(float value)
 	pos.Y += value * MoveSpeed * UGameplayStatics::GetWorldDeltaSeconds(this);
 	if (pos.Y <= MaxY && pos.Y >= MinY)
 		SetActorLocation(pos);
+}
+
+void AIMPlayer::Die()
+{
+
 }

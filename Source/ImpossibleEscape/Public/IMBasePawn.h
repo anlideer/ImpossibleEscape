@@ -7,6 +7,9 @@
 #include "Components/SphereComponent.h"
 #include "IMBasePawn.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLifeChanged, int, NewLifeCount);
+
 UCLASS()
 class IMPOSSIBLEESCAPE_API AIMBasePawn : public APawn
 {
@@ -34,7 +37,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	void TakeDamage(); // return true if still alive after that, return false if dead
+	UPROPERTY(BlueprintAssignable)
+	FOnLifeChanged OnLifeChanged;
+
+	void TakeDamage();
 	void Shoot();
 	virtual void Die();
 

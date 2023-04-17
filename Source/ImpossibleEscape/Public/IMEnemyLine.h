@@ -52,7 +52,7 @@ protected:
 
 public:	
 
-	void OnEnemyDied();
+	void OnEnemyDied(int X, int Y);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -65,6 +65,8 @@ private:
 	float RealMoveSpeed;	// dynamica based on enemy alive
 	float MoveDirection;
 	bool isMoving;
+	TArray<TArray<AActor*>> EnemyList;
 
 	void DoMove();
+	void ReCalculateBorder();
 };
