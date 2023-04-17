@@ -12,3 +12,8 @@ https://uxwing.com/rocket-icon/ (icon)
 
 
 Engine version: 5.0.3 (I don't think ue5 provides a very good experience though)
+
+
+Unfortunately, I have to replace the experimental feature (Geometry Script https://docs.unrealengine.com/5.0/en-US/geometry-script-users-guide/) I use with plain cubes when packaging, because experimental stuffs refuse to show up whatever packaging option I chose.
+(Screenshot in Editor Play mode) 
+![space-invader](https://user-images.githubusercontent.com/33090166/232606864-62c52692-8632-4394-a234-67b9ee9a8683.PNG)
