@@ -1,4 +1,4 @@
-# Impossible Escape
+# Impossible Escape (3d space invader)
  Game demo for "Games Job Fair Spring 2023 - Unreal Engine Programming Challenge" https://gamesjobfair.com/programming-challenges-unrealengine-unity#rec553276653 (create a space-invader-like game)
 
 Destructable wall related and UI written in Blueprints, the other in C++.  
