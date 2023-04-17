@@ -20,7 +20,8 @@ AIMBasePawn::AIMBasePawn()
 void AIMBasePawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	lastShootTime = 0.f;
 }
 
 // Called every frame
@@ -41,6 +42,11 @@ void AIMBasePawn::Shoot()
 {
 	if (ensure(ProjectileClass))
 	{
+		if (lastShootTime + FTimespan::FromMilliseconds(500) - FDateTime::Now() > 0)
+		{
+			return;
+		}
+		lastShootTime = FDateTime::Now();
 		FTransform SpawnTransform = FTransform(GetActorRotation(), GetActorLocation());
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

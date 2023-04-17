@@ -7,6 +7,8 @@
 #include "IMScoreComponent.h"
 #include "IMPlayer.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameEnd, bool, IsWin);
+
 class UIMScoreComponent;
 
 UCLASS()
@@ -32,20 +34,36 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float MaxY;
 
-	UPROPERTY(VisibleAnywhere, Category = "Basis")
-	UIMScoreComponent* ScoreComp;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Basis")
+	TObjectPtr<UIMScoreComponent> ScoreComp;
 
 	void MoveRight(float value);	// movement
+	void ContinueGame();	// continue next level or restart
+	void ExitGame();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+	UPROPERTY(BlueprintReadOnly)
+	bool Winned;
+	UPROPERTY(BlueprintReadOnly)
+	bool GameEnded;
 
 	void Die() override;
+	void SetGameEnd(bool IsWin);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGameEnd OnGameEnd;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+private:
+	FString SlotName;
+
+	void HandleSaveScore();
 };

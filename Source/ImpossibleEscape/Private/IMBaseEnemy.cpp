@@ -48,8 +48,6 @@ void AIMBaseEnemy::ScheduleShoot()
 
 void AIMBaseEnemy::Die()
 {
-	Manager->OnEnemyDied(IndexX, IndexY);
-	
 	if (UIMScoreComponent* ScoreComp =
 		Cast<UIMScoreComponent>(
 			UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetComponentByClass(UIMScoreComponent::StaticClass())))
@@ -57,5 +55,6 @@ void AIMBaseEnemy::Die()
 		ScoreComp->AddScore(EnemyPoints);
 	}
 
+	Manager->OnEnemyDied(IndexX, IndexY);
 	this->Destroy();
 }

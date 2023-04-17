@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "IMEnemyLine.generated.h"
 
+// manager of enemies
 UCLASS()
 class IMPOSSIBLEESCAPE_API AIMEnemyLine : public APawn
 {
@@ -26,6 +27,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Generation")
 	FVector IntervalVec;
 
+	UPROPERTY(EditAnywhere, Category = "Generation")
+	FVector SpecialEnemyStartPoint;
+
 	UPROPERTY(EditAnywhere, Category = "EnemyPreset")
 	TSubclassOf<AActor> EnemyClass;
 
@@ -34,6 +38,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "EnemyPreset")
 	TSubclassOf<AActor> ThirdEnemyClass;
+
+	UPROPERTY(EditAnywhere, Category = "EnemyPreset")
+	TSubclassOf<AActor> SpecialEnemyClass;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float MinY;
@@ -67,6 +74,10 @@ private:
 	bool isMoving;
 	TArray<TArray<AActor*>> EnemyList;
 
+	FTimerHandle TimerHandle;
+
+	void GenerateEnemyBlock();
 	void DoMove();
 	void ReCalculateBorder();
+	void GenerateSpecialEnemy();
 };

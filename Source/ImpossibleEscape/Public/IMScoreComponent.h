@@ -22,11 +22,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-
+	UFUNCTION(BlueprintCallable)
 	void AddScore(int Amount);
 
 	UFUNCTION(BlueprintCallable)
 	int GetScore();
+
+	UFUNCTION(BlueprintCallable)
+	int GetHighestScore();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnScoreChanged OnScoreChanged;
@@ -36,5 +39,4 @@ public:
 
 private:
 	int Score;
-
 };

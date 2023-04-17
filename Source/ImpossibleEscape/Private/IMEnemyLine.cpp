@@ -2,7 +2,9 @@
 
 #include "IMEnemyLine.h"
 #include "IMBaseEnemy.h"
+#include "IMPlayer.h"
 #include "Kismet/GameplayStatics.h"
+#include "IMSaveGame.h"
 
 // Sets default values
 AIMEnemyLine::AIMEnemyLine()
@@ -25,6 +27,67 @@ void AIMEnemyLine::BeginPlay()
 	MoveDirection = 1.f;
 	isMoving = true;
 
+	// get level
+	int level = 0;
+	if (UIMSaveGame* SaveGameInstance = Cast<UIMSaveGame>(UGameplayStatics::LoadGameFromSlot("IMSave", 0)))
+	{
+		level = SaveGameInstance->Level;
+	}
+	if (level > 0)
+	{
+		FVector pos = GetActorLocation();
+		pos.X -= level * IntervalVec.X;
+		SetActorLocation(pos);
+	}
+
+
+	GenerateEnemyBlock();
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AIMEnemyLine::GenerateSpecialEnemy, FMath::RandRange(3.f, 6.f), false);
+}
+
+// Called every frame
+void AIMEnemyLine::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (AIMPlayer* GlobalPlayer = Cast<AIMPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+	{
+		if (GlobalPlayer->GameEnded)
+			isMoving = false;
+	}
+
+	if (isMoving)
+	{
+		DoMove();
+	}
+}
+
+void AIMEnemyLine::OnEnemyDied(int X, int Y)
+{
+	CurrentEnemyCount--;
+
+	if (CurrentEnemyCount <= 0)
+	{
+		isMoving = false;
+		if (AIMPlayer* GlobalPlayer = Cast<AIMPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+		{
+			GlobalPlayer->SetGameEnd(true);
+		}
+	}
+
+	// recalculate speed
+	float factor = (float)EnemyLineCount * (float)EnemyPerLine / (float)CurrentEnemyCount;
+	if (factor > 3) 
+		factor = 3;
+	RealMoveSpeed = InitialMoveSpeed * factor;
+
+	// recalculate miny maxy (moving area)
+	EnemyList[X][Y] = nullptr;
+	ReCalculateBorder();
+}
+
+void AIMEnemyLine::GenerateEnemyBlock()
+{
 	// init enemy array
 	EnemyList.SetNum(EnemyLineCount);
 	for (int c = 0; c < EnemyLineCount; c++)
@@ -38,8 +101,8 @@ void AIMEnemyLine::BeginPlay()
 			for (int j = 0; j < EnemyPerLine; j++)
 			{
 				FRotator SpawnRotator = FVector(-1, 0, 0).Rotation();
-				FVector StartLocation = GetActorLocation() + 
-					i * FVector(IntervalVec.X, 0, 0) + 
+				FVector StartLocation = GetActorLocation() +
+					i * FVector(IntervalVec.X, 0, 0) +
 					j * FVector(0, IntervalVec.Y, 0);
 				FTransform SpawnTransform = FTransform(SpawnRotator, StartLocation);
 				FActorSpawnParameters SpawnParams;
@@ -67,32 +130,6 @@ void AIMEnemyLine::BeginPlay()
 	}
 }
 
-// Called every frame
-void AIMEnemyLine::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (isMoving)
-	{
-		DoMove();
-	}
-}
-
-void AIMEnemyLine::OnEnemyDied(int X, int Y)
-{
-	CurrentEnemyCount--;
-
-	// recalculate speed
-	float factor = (float)EnemyLineCount * (float)EnemyPerLine / (float)CurrentEnemyCount;
-	if (factor > 3) 
-		factor = 3;
-	RealMoveSpeed = InitialMoveSpeed * factor;
-
-	// recalculate miny maxy (moving area)
-	EnemyList[X][Y] = nullptr;
-	ReCalculateBorder();
-}
-
 void AIMEnemyLine::DoMove()
 {
 	FVector pos = GetActorLocation();
@@ -105,13 +142,13 @@ void AIMEnemyLine::DoMove()
 	{
 		pos = GetActorLocation();
 		pos.X -= IntervalVec.X;
-		// TODO: more check to see if game end
-		if (pos.X <= FinalX)
+		if (pos.X < FinalX)
 		{
 			isMoving = false;
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Lose"));
-
+			if (AIMPlayer* GlobalPlayer = Cast<AIMPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+			{
+				GlobalPlayer->SetGameEnd(false);
+			}
 		}
 		else
 		{
@@ -157,12 +194,21 @@ void AIMEnemyLine::ReCalculateBorder()
 		else
 			break;
 	}
-	
-	// update border
-	int length = EndY - StartY + 1;
-	if (length < 0)
-		length = 0;
 
 	RealMinY = MinY - StartY * IntervalVec.Y;
-	RealMaxY = MaxY - length * IntervalVec.Y;
+	RealMaxY = MaxY - EndY * IntervalVec.Y;
+}
+
+void AIMEnemyLine::GenerateSpecialEnemy()
+{
+	if (ensure(SpecialEnemyClass) && isMoving)
+	{
+		FTransform SpawnTransform = FTransform(FRotator(0, 180, 0), SpecialEnemyStartPoint);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+		GetWorld()->SpawnActor<AActor>(SpecialEnemyClass, SpawnTransform, SpawnParams);
+
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AIMEnemyLine::GenerateSpecialEnemy, FMath::RandRange(15.f, 30.f), false);
+	}
 }

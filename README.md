@@ -1,7 +1,7 @@
 # Impossible Escape
  Game demo for "Games Job Fair Spring 2023 - Unreal Engine Programming Challenge" https://gamesjobfair.com/programming-challenges-unrealengine-unity#rec553276653 (create a space-invader-like game)
 
-Destructable wall related and part of UI written in Blueprints, the other in C++.  
+Destructable wall related and UI written in Blueprints, the other in C++.  
 The implementation of destructable walls is following a video tutorial https://www.youtube.com/watch?v=ITP_8DqFZ-c&t=163s using Geometry Scripting.
 
 **Art assets from**:
@@ -11,4 +11,4 @@ https://uxwing.com/rocket-icon/ (icon)
 
 
 
-Engine version: 5.0.3
+Engine version: 5.0.3 (I don't think ue5 provides a very good experience though)

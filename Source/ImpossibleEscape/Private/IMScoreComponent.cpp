@@ -2,6 +2,8 @@
 
 
 #include "IMScoreComponent.h"
+#include "IMSaveGame.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UIMScoreComponent::UIMScoreComponent()
@@ -11,6 +13,7 @@ UIMScoreComponent::UIMScoreComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+
 }
 
 
@@ -18,9 +21,15 @@ UIMScoreComponent::UIMScoreComponent()
 void UIMScoreComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Score = 0;
 	
+	if (UIMSaveGame* SaveGameInstance = Cast<UIMSaveGame>(UGameplayStatics::LoadGameFromSlot("IMSave", 0)))
+	{
+		Score = SaveGameInstance->CurrentScore;
+	}
+	else
+	{
+		Score = 0;
+	}
 }
 
 
@@ -36,9 +45,22 @@ void UIMScoreComponent::AddScore(int Amount)
 {
 	Score += Amount;
 	OnScoreChanged.Broadcast(Score);
+
 }
 
 int UIMScoreComponent::GetScore()
 {
 	return Score;
+}
+
+int UIMScoreComponent::GetHighestScore()
+{
+	if (UIMSaveGame* SaveGameInstance = Cast<UIMSaveGame>(UGameplayStatics::LoadGameFromSlot("IMSave", 0)))
+	{
+		return SaveGameInstance->HighestScore;
+	}
+	else
+	{
+		return Score;
+	}
 }
